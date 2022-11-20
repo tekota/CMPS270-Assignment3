@@ -36,6 +36,8 @@ void *ThreadsFunction(void *vargp)
 //TESTER FUNCTIONS FOR THE PROGRAM
 /*
 This program works for any length of array and any number of threads
+
+The global variables are altered.
 */
 int main()
 {
@@ -78,3 +80,17 @@ int main()
     printf("\nTotal time taken by CPU: %f\n", total_t  );
     return 0;
 }
+
+
+/* 
+TEST CASES:
+
+1. 1000 elements, 10 threads        EVEN
+"For an array of length 1000 and 10 created threads
+Total number of 1s: 190"
+
+2. 2943 elements, 13 threads        ODD
+"For an array of length 2943 and 13 created threads
+Total number of 1s: 561"
+
+*/
