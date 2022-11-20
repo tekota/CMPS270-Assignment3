@@ -10,7 +10,7 @@ int good = 0; // good answers
 int *array;
 int length;
 int numThreads;
-
+pthread_mutex_t lock;
 // The function that will be executed by the threads
 /*
 Required: Global variables
@@ -21,17 +21,21 @@ void *ThreadsFunction(void *vargp)
 {
     int *myid = (int *)vargp;
     int i;
-    int start = (*myid)%numThreads * (length / numThreads);
-    int end = start + (length / numThreads);
+    int start_t = (*myid)%numThreads * (length / numThreads);
+    int end_t = start_t + (length / numThreads);
     int count = 0;
-    for (i = start; i < end; i++)
+    for (i = start_t; i < end_t; i++)
     {
         if (array[i] == 1)
             count++;
     }
+    //mutex lock
+    pthread_mutex_lock(&lock);
     totalCount += count;
-    printf("\nThread %d: %d 1s counted\n", *myid, count);
-
+    //mutex unlock
+    pthread_mutex_unlock(&lock);
+    
+    // printf("\nThread %d: %d 1s counted\n", *myid, count);
 }
 
 //TESTER FUNCTIONS FOR THE PROGRAM
@@ -47,11 +51,10 @@ Report Contd
 
 int main(int argc)
 {
+     
     printf("Enter the number of threads: ");
-    scanf("%d", &numThreads);  
-
-    
-    length = 1000000;
+    scanf("%d", &numThreads);
+    length = 100000000;
     array = (int *)malloc(length * sizeof(int));
     for (int i=0; i< length/16; i++)
         {
@@ -117,12 +120,15 @@ int main(int argc)
         {
             array[i] = 0;
         }
-
-
+    
+    
+    
     pthread_t tid[numThreads]; // Thread ID
     int thread[numThreads]; // Thread number
 
-    for (int s = 0; s < 100; s++){
+   clock_t start_t = clock();
+    for (int s = 0; s <100; s++){
+      
     for (int i = 0; i < numThreads; i++) 
         {
             thread[i] = i;
@@ -133,17 +139,19 @@ int main(int argc)
         {
             pthread_join(tid[i], NULL);
         }
-    printf("\nFor an array of length %d and %d created threads\n", length, numThreads);
-    printf("\nTotal number of 1s: %d\n", totalCount); 
- 
-
-    if (totalCount == 500000)
-        good++;
+    // printf("\nFor an array of length %d and %d created threads\n", length, numThreads);
+    // printf("\nTotal number of 1s: %d\n", totalCount); 
     
-    totalCount = 0;
-    } 
+    
+
+    if (totalCount == length/2)
+        good++;
+
+    totalCount = 0;    
+}
+    clock_t end_t = clock();
+    double total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC; 
+    printf("\nTotal time taken by CPU: %f\n", total_t);
     printf("Good answers: %d\n", good);
     return 0;
 }
-
-// 
